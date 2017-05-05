@@ -1,14 +1,17 @@
 {
   "name": "investAustin",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Serving Tango ADF files for Invest Austin mobile app. This is a Node.js application inteded to run on Google Cloud Platform",
+  "private": true,
+  "main": "app.js",
+  "repository":"https://github.com/AceLondon/investAustin",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Jonah B. Mancini",
+  "license": "Apache-2.0",
   "dependencies": {
     "@google-cloud/storage": "^1.1.0",
     "body-parser": "^1.17.1",
