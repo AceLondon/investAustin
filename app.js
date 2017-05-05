@@ -1,14 +1,21 @@
 // file: index.js
 var _ = require("lodash");
-var express = require("express");
+const express = require("express");
 var bodyParser = require("body-parser");
 var jwt = require('jsonwebtoken');
+const config = require('./config');
 
 var passport = require("passport");
 var passportJWT = require("passport-jwt");
 
 var ExtractJwt = passportJWT.ExtractJwt;
 var JwtStrategy = passportJWT.Strategy;
+
+const Storage = require('@google-cloud/storage');
+const storage = Storage();
+console.log("Setting cloud storage bucket: " + config.get('CLOUD_BUCKET'));
+var bucket = storage.bucket(config.get('CLOUD_BUCKET'));
+
 
 
 /************* users *************/
@@ -44,7 +51,7 @@ var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
 passport.use(strategy);
 
 /************* express routes *************/
-var app = express();
+const app = express();
 app.use(passport.initialize());
 
 // parse application/x-www-form-urlencoded
@@ -98,11 +105,31 @@ app.get("/adfs", passport.authenticate('jwt', { session: false }), function(req,
 });
 
 app.get("/adf/:uuid", passport.authenticate('jwt', { session: false }), function(req, res){
-  // res.json("Cool, redirect to: " + "https://app.box.com/shared/static/" + req.params.uuid);
-  res.redirect("https://storage.googleapis.com/austin-ar.appspot.com/adfs/" + req.params.uuid);
-  // res.redirect("https://storage.googleapis.com/austin-ar.appspot.com/adfs/");
+  var file = bucket.file("adfs/"+req.params.uuid);
+  var destFileName = req.params.uuid;
+
+  // res.json("Cool, file: ${file.name} downloading to /${destFileName}");
+  // res.send("Cool, file: " + file.name + "downloading to " + destFileName);
+
+  res.send("Cool, file: " + file.name + "downloading as "+destFileName);
+  var options = {
+    // The path to which the file should be downloaded, e.g. "./file.txt"
+    destination: destFileName
+  };
+  file.download(options).then(() => {
+      console.log(`File ${file.name} downloaded to ${destFileName}.`);
+    });
 });
 
-app.listen(8081, function() {
-  console.log("Express running");
-});
+// app.listen(8081, function() {
+//   console.log("Express running");
+// });
+if (module === require.main) {
+    // Start the server
+    const server = app.listen(config.get('PORT'), () => {
+    const port = server.address().port;
+    console.log(`App listening on port ${port}`);
+  });
+}
+
+module.exports = app;

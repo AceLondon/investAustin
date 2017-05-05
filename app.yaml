@@ -11,7 +11,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# [START runtime]
+# [START app_yaml]
 runtime: nodejs
 env: flex
-# [END runtime]
+# [START env]
+env_variables:
+  GCLOUD_STORAGE_BUCKET: austin-ar
+# [END env]
+# [END app_yaml]
