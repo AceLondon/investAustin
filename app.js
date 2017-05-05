@@ -57,7 +57,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 app.get("/", function(req, res) {
-  res.json({message: "Express is up!"});
+  res.status(200).json({message: "Express is up!"});
 });
 
 app.post("/login", function(req, res) {
@@ -103,6 +103,6 @@ app.get("/adf/:uuid", passport.authenticate('jwt', { session: false }), function
   // res.redirect("https://storage.googleapis.com/austin-ar.appspot.com/adfs/");
 });
 
-app.listen(3000, function() {
+app.listen(8081, function() {
   console.log("Express running");
 });
